@@ -19,23 +19,25 @@ function App() {
    * 1. Variável com o seu valor inicial
    * 2. Função para atualizarmos esse valor
    */
-  const [projects, setProjects] = useState(['Desenvolvimento de app', 'Front-end Web']);
+  const [projects, setProjects] = useState([]);
 
   useEffect(() => {
     api.get('projects').then(response => {
-      console.log(response)
+      setProjects(response.data);
     })
   }, []); // Segundo parametro com array vazio quer dizer que ele só vai executar uma vez ao inicializar
   
 
-  function handleAppProject() {
-    // projects.push(`Novo Projeto ${Date.now()}`);
+  async function handleAddProject() {
+    const response = await api.post('projects',   {   
+      title: `Novo Projeto ${Date.now()}`,
+      owner: "Kelvis Borges"
+    });
 
-    setProjects([...projects, `Novo projeto ${Date.now()}`]);
+    const project = response.data;
 
-    console.log(projects);
-    
-  }
+    setProjects([...projects, project]);
+  }  
 
   return (
     <>
@@ -43,10 +45,10 @@ function App() {
       
 
       <ul>
-        {projects.map(project => <li key={project}>{project}</li>)}
+        {projects.map(project => <li key={project.id}>{project.title}</li>)}
       </ul>
 
-      <button type="button" onClick={handleAppProject}>Adicionar Projeto</button>
+      <button type="button" onClick={handleAddProject}>Adicionar Projeto</button>
     </>
   )
 }
